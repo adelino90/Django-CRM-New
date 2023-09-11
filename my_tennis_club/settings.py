@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'my_tennis_club.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'dingTest',
+        'NAME':'test',
         'USER':'root',
         'PASSWORD':'',
         'HOST':'localhost',

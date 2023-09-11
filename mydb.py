@@ -13,5 +13,5 @@ cursorObject = dataBase.cursor()
 
 #create the database
 
-cursorObject.execute("CREATE DATABASE dingTest")
+cursorObject.execute("CREATE DATABASE test")
 print("ALL DONE!")
