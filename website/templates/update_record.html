@@ -3,7 +3,7 @@
 
 <div class="col-md-6 offset-md-3">
     <h1>Update Record</h1>
-    <form method = "POST">
+    <form id = "record_form" method = "POST">
         {% csrf_token %}
         {{ form.as_p }}
         <br>
@@ -13,4 +13,44 @@
 
     
 </div>
+
+
+{% block javascript %}
+<script>
+ /*
+        On submiting the form, send the POST ajax
+        request to server and after successfull submission
+        display the object.
+    */
+    $("#record_form").submit(function (e) {
+        // preventing from page reload and default actions
+        e.preventDefault();
+        // serialize the data for sending the form data.
+        var serializedData = $(this).serialize();
+        // make POST ajax call
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'update_record' id %}",
+            data: serializedData,
+            success: function (response) {
+                $("#record_form").trigger('reset');
+                result = JSON.parse(response.instance)
+                fields = result[0]["fields"];
+              for(field in fields){
+                element = ''+`${field}`+''
+                $('input[name="'+element+'"]').val(`${fields[field]}`)
+              }
+              toastr.success('Record Saved!')  
+                
+
+            },
+            error: function (response) {
+                console.log(response)
+                // alert the error if any error occured
+                alert(response["responseJSON"]["error"]);
+            }
+        })
+    })
+</script>
+{% endblock javascript %}
 {% endblock %}

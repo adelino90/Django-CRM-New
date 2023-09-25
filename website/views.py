@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm, AddRecordForm
 from .models import Record
+from django.http import JsonResponse
+from django.core import serializers
 
 def home (request):
     
@@ -79,16 +81,23 @@ def add_record(request):
             else:
                 messages.success(request, "You must be login to view the page")
                 return redirect('home')
-
+    
 def update_record(request,pk):
     if request.user.is_authenticated:
         current_record = Record.objects.get(id=pk)
         form = AddRecordForm(request.POST or None, instance=current_record)
-        if form.is_valid():
-            add_record = form.save()
-            messages.success(request, "Record Updated Successfully!")
-            return redirect('home')
-        return render(request, 'update_record.html',{'form':form})
+        if request.method == "POST":
+            if form.is_valid():
+                instance = form.save()
+                # serialize in new friend object in json
+                ser_instance = serializers.serialize('json', [ instance, ])
+                # send to client side.
+                return JsonResponse({"instance": ser_instance}, status=200)
+            else:
+                # some form errors occured.
+                return JsonResponse({"error": form.errors}, status=400)  
+        else:
+            return render(request, 'update_record.html',{'form':form,'id':pk})
     else:
         messages.success(request, "You must be login to view the page")
         return redirect('home')
